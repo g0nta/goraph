@@ -1,0 +1,2 @@
+# goraph
+Simple graph library
