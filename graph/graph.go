@@ -1,42 +1,71 @@
 package goraph
 
-//Vertex : 重みなしVertex. 重みありVertexは別の構造体で。。。？
-type Vertex uint
-
-//Edge : struct of edge. Maybe this struct don't need...
-type Edge struct {
-	From Vertex
-	To   Vertex
-}
+import (
+	"errors"
+)
 
 //Graph : グラフの構造体。privateにすべき？
-//グラフは辺集合を持つべき？隣接行列かLinkedList持ってれば持たなくてもいいが、隣接行列とLinkeListどっちを持てばいいかはグラフの疎密具合に依存する。。。
-//辺集合を持っておいて後でユーザー側でBuildAdjMatrix or BuildLinkedListみたいなのをしたほうがいい気もする
-//隣接行列なら辺の問い合わせは定数。隣接行列持った方がいいかな。
-//隣接行列だけもつ。頂点の追加は隣接行列に行と列を足す。辺の追加は該当要素に1を立てる。とすれば良いのか？？？？
-//いやーMST求める時とかはEdge Set持ってた方が楽だったりするんだよな。。。
-// 頂点集合と辺集合と有向無向のフラグを持つようにする。
+// 頂点集合と辺集合を持つようにする。
+// LinkedListとかはもう少し検討が必要。
 type Graph struct {
-	VertexSet       map[Vertex]Vertex //Key: ID of vertex, Value: vertex.
-	EdgeSet         map[Edge]Edge
-	IsDirected      bool
-	LinkedList      map[Vertex][]Vertex
-	AdjacencyMatrix [][]Vertex
+	VertexSet map[Vertex]Vertex
+	EdgeSet   map[Edge]Edge
+	Neighbors map[Vertex]map[Vertex]Vertex
 }
 
-//New returns an empty graph.
-func New(isDirected bool) *Graph {
+//NewGraph is constractor of Graph struct. It returns an empty graph.
+//スライスの容量も指定できるようにするべき。。。
+func NewGraph() *Graph {
 	g := new(Graph)
 	g.VertexSet = make(map[Vertex]Vertex)
 	g.EdgeSet = make(map[Edge]Edge)
-	g.IsDirected = isDirected
-	g.LinkedList = make(map[Vertex][]Vertex)
-	g.AdjacencyMatrix = make([][]Vertex, 0)
+	g.Neighbors = make(map[Vertex]map[Vertex]Vertex)
 	return g
 }
 
-func (g *Graph) AddNode(v Vertex) error {
-	if _, isExist := g.VertexSet[v]; isExist==true {
-		return error.
+//AddVertex adds a vertex to a graph g.
+func (g *Graph) AddVertex(v Vertex) error {
+	if _, isExist := g.VertexSet[v]; isExist == true {
+		return errors.New("the graph already has a same vertex")
 	}
+
+	g.VertexSet[v] = v
+	g.Neighbors[v] = make(map[Vertex]Vertex, 0)
+	return nil
+}
+
+//DeleteVertex deletes a vertex from g.
+func (g *Graph) DeleteVertex(v Vertex) {
+	delete(g.VertexSet, v)
+
+	neighbors := g.Neighbors[v]
+	for _, u := range neighbors {
+		delete(g.Neighbors[u], v)
+	}
+	delete(g.Neighbors, v)
+}
+
+//AddEdge adds an edge to a graph g.
+func (g *Graph) AddEdge(e Edge) error {
+	from := e.From
+	to := e.To
+
+	// check the VertexSet contains each vertecies
+	if _, isExist := g.VertexSet[from]; isExist == false {
+		g.AddVertex(from)
+	}
+	if _, isExist := g.VertexSet[to]; isExist == false {
+		g.AddVertex(to)
+	}
+
+	//check the edge set has an same edge.
+	if _, isExist := g.EdgeSet[e]; isExist == true {
+		return errors.New("the graph already has a same edge")
+	}
+
+	g.EdgeSet[e] = e
+	g.Neighbors[from][to] = to
+	g.Neighbors[to][from] = from
+
+	return nil
 }
