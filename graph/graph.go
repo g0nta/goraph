@@ -25,10 +25,7 @@ func (g *Graph) AddVertex(v interface{}, attr map[string]interface{}) {
 	if _, isExist := g.vertexSet[v]; isExist == true {
 		return
 	}
-	// attrが指定されていない場合はweightを設定する
-	if attr == nil {
-		attr = map[string]interface{}{"weight": 1}
-	}
+
 	g.vertexSet[v] = Vertex{v, attr}
 	g.neighbors[v] = make(map[interface{}]Vertex, 0)
 }
