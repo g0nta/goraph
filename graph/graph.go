@@ -1,5 +1,7 @@
 package goraph
 
+import "errors"
+
 //Graph : グラフの構造体。privateにすべき？
 // 頂点集合と辺集合を持つようにする。
 // LinkedListとかはもう少し検討が必要。
@@ -21,13 +23,14 @@ func NewGraph() *Graph {
 
 //AddVertex adds a vertex to g.
 //errorを返すべきなのかbool(success or fail)を返すべきなのか。。。
-func (g *Graph) AddVertex(v interface{}, attr map[string]interface{}) {
+func (g *Graph) AddVertex(v interface{}, attr map[string]interface{}) error {
 	if _, isExist := g.vertexSet[v]; isExist == true {
-		return
+		return errors.New("the vertex has already exist")
 	}
 
 	g.vertexSet[v] = Vertex{v, attr}
 	g.neighbors[v] = make(map[interface{}]Vertex, 0)
+	return nil
 }
 
 //AddVertices adds some vertices to g
@@ -58,7 +61,7 @@ func (g *Graph) DeleteVertices(vertices []Vertex) {
 
 //AddEdge adds an edge to g.
 //If g doesn't have vertex u or v, they are added to g without attributes.
-func (g *Graph) AddEdge(u interface{}, v interface{}, attr map[string]interface{}) {
+func (g *Graph) AddEdge(u interface{}, v interface{}, attr map[string]interface{}) error {
 	// check the VertexSet contains each vertecies
 	if _, isExist := g.vertexSet[v]; isExist == false {
 		g.AddVertex(v, nil)
@@ -69,15 +72,19 @@ func (g *Graph) AddEdge(u interface{}, v interface{}, attr map[string]interface{
 
 	//check the edge set has an same edge.
 	if _, isExist := g.neighbors[u][v]; isExist == true {
-		return
+		return errors.New("the edge has already exist")
 	}
 
 	g.neighbors[u][v] = Vertex{v, nil}
 	g.neighbors[v][u] = Vertex{u, nil}
 
 	e := Edge{u, v, attr}
+	g.edgeSet[u] = make(map[interface{}]Edge, 0)
 	g.edgeSet[u][v] = e
+	g.edgeSet[v] = make(map[interface{}]Edge, 0)
 	g.edgeSet[v][u] = e
+
+	return nil
 }
 
 //AddEdges adds some edges to g.

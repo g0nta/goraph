@@ -17,14 +17,21 @@ type Edge struct {
 //AddVertex adds vertex to its graph. If the graph already has same vertex, it returns error.
 //AddEdge add edge to its graph. If the graph already has same vertex, it returns error.
 type IGraph interface {
-	AddVertex(v interface{}, attr map[string]interface{})
+	//GetVertex
+	//GetVertices
+	AddVertex(v interface{}, attr map[string]interface{}) error
 	AddVertices(vertices []Vertex)
 	//UpdateVertex
 	//UpdateVertices
 	DeleteVertex(v interface{})
 	DeleteVertices(vertices []interface{})
-	AddEdge(u interface{}, v interface{}, attr map[string]interface{})
+
+	//GetEdge
+	//GetEdges
+	AddEdge(u interface{}, v interface{}, attr map[string]interface{}) error
 	AddEdges(edges []Edge)
+	//UpdateEdge
+	//UpdateEdges
 	DeleteEdge(u interface{}, v interface{})
 	DeleteEdges(edges []Edge)
 
