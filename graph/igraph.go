@@ -19,6 +19,8 @@ type Edge struct {
 type IGraph interface {
 	AddVertex(v interface{}, attr map[string]interface{})
 	AddVertices(vertices []Vertex)
+	//UpdateVertex
+	//UpdateVertices
 	DeleteVertex(v interface{})
 	DeleteVertices(vertices []interface{})
 	AddEdge(u interface{}, v interface{}, attr map[string]interface{})
