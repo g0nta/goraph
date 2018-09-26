@@ -40,9 +40,14 @@ func (g *Graph) AddVertices(vertices []Vertex) {
 	}
 }
 
-//GetVertex get a vertex from g.
+//GetVertex get a vertex from g. If v is not in g, it returns nil.
 func (g *Graph) GetVertex(v interface{}) Vertex {
 	return g.vertexSet[v]
+}
+
+//GetNeighbors gets a v's neighbors. If v doesn't have neighbors, it returns nil.
+func (g *Graph) GetNeighbors(v interface{}) map[interface{}]Vertex {
+	return g.neighbors[v]
 }
 
 //DeleteVertex deletes a vertex from g.

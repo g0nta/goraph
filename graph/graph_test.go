@@ -74,7 +74,8 @@ func TestAddVertices1(t *testing.T) {
 //Some vertices that will be added already exist in g.
 func TestAddVertices2(t *testing.T) {
 	g := NewGraph()
-	g.AddVertex(1, nil)
+	g.vertexSet[1] = Vertex{1, nil}
+	g.neighbors[1] = make(map[interface{}]Vertex, 0)
 	vertices := []Vertex{Vertex{1, nil}, Vertex{2, nil}, Vertex{3, nil}}
 	g.AddVertices(vertices)
 
@@ -86,7 +87,8 @@ func TestAddVertices2(t *testing.T) {
 
 func TestGetVertex1(t *testing.T) {
 	g := NewGraph()
-	g.AddVertex(1, nil)
+	g.vertexSet[1] = Vertex{1, nil}
+	g.neighbors[1] = make(map[interface{}]Vertex, 0)
 	v := g.GetVertex(1)
 	if v.Vertex != 1 {
 		t.Errorf("TestGetVertex1 has faild. An Expected value is %d, but %d is returned.", 1, v.Vertex)
@@ -102,6 +104,48 @@ func TestGetVertex2(t *testing.T) {
 		t.Errorf("TestGetVertex2 has faild. An Expected value is nil.")
 	}
 	t.Log("TestGetVertex2 has successed.")
+}
+
+func TestGetNeighbors1(t *testing.T) {
+	g := NewGraph()
+	u := 1
+	v := 2
+	w := 3
+	g.vertexSet[u] = Vertex{u, nil}
+	g.neighbors[u] = map[interface{}]Vertex{v: Vertex{v, nil}, w: Vertex{w, nil}}
+	g.vertexSet[v] = Vertex{v, nil}
+	g.neighbors[v] = map[interface{}]Vertex{u: Vertex{u, nil}}
+	g.vertexSet[w] = Vertex{w, nil}
+	g.neighbors[w] = map[interface{}]Vertex{w: Vertex{u, nil}}
+
+	g.edgeSet[u] = map[interface{}]Edge{v: Edge{u, v, nil}, w: Edge{u, w, nil}}
+	g.edgeSet[v] = map[interface{}]Edge{u: Edge{u, v, nil}}
+	g.edgeSet[w] = map[interface{}]Edge{u: Edge{u, w, nil}}
+
+	neighbors := g.GetNeighbors(u)
+
+	if len(neighbors) != 2 {
+		t.Errorf("TestGetNeighbors has faild. The length of neighbors must be 2 but it returns %d", len(neighbors))
+	}
+	if neighbors[v].Vertex != v {
+		t.Errorf("TestGetNeighbors has faild. An Expected value is %d, but it returns %d", v, neighbors[v].Vertex)
+	}
+	if neighbors[w].Vertex != w {
+		t.Errorf("TestGetNeighbors has faild. An Expected value is %d, but it returns %d", w, neighbors[w].Vertex)
+	}
+}
+
+func TestGetNeighbors2(t *testing.T) {
+	g := NewGraph()
+	u := 1
+	g.vertexSet[u] = Vertex{u, nil}
+	g.neighbors[u] = make(map[interface{}]Vertex, 0)
+
+	neighbors := g.GetNeighbors(u)
+
+	if len(neighbors) != 0 {
+		t.Errorf("TestGetNeighbors has faild. The length of neighbors must be 0 but it returns %d", len(neighbors))
+	}
 }
 
 //TestAddEdge1 tests AddEdge.
@@ -151,8 +195,10 @@ func TestAddEdge2(t *testing.T) {
 	g := NewGraph()
 	u := 1
 	v := 2
-	g.AddVertex(u, nil)
-	g.AddVertex(v, nil)
+	g.vertexSet[u] = Vertex{u, nil}
+	g.neighbors[u] = make(map[interface{}]Vertex, 0)
+	g.vertexSet[v] = Vertex{v, nil}
+	g.neighbors[v] = make(map[interface{}]Vertex, 0)
 	g.AddEdge(u, v, nil)
 	if x, isExist := g.neighbors[u][v]; isExist == false {
 		t.Error("TestAddEdge1 has faild. Neigbhors wasn't updated.")

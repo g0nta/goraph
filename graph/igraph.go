@@ -20,6 +20,7 @@ type IGraph interface {
 	AddVertex(v interface{}, attr map[string]interface{}) error
 	AddVertices(vertices []Vertex)
 	GetVertex(v interface{}) Vertex
+	GetNeighbors(v interface{}) map[interface{}]Vertex
 	//UpdateVertex
 	//UpdateVertices
 	DeleteVertex(v interface{})
