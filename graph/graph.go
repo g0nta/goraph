@@ -40,6 +40,11 @@ func (g *Graph) AddVertices(vertices []Vertex) {
 	}
 }
 
+//GetVertex get a vertex from g.
+func (g *Graph) GetVertex(v interface{}) Vertex {
+	return g.vertexSet[v]
+}
+
 //DeleteVertex deletes a vertex from g.
 //複数のオブジェクトをいじるからトランザクション処理っぽいことしたほうがいいか。。。
 func (g *Graph) DeleteVertex(v interface{}) {

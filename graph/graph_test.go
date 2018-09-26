@@ -84,6 +84,26 @@ func TestAddVertices2(t *testing.T) {
 	t.Log("TestAddVertices2 has successed.")
 }
 
+func TestGetVertex1(t *testing.T) {
+	g := NewGraph()
+	g.AddVertex(1, nil)
+	v := g.GetVertex(1)
+	if v.Vertex != 1 {
+		t.Errorf("TestGetVertex1 has faild. An Expected value is %d, but %d is returned.", 1, v.Vertex)
+	}
+	t.Log("TestGetVertex1 has successed.")
+}
+
+func TestGetVertex2(t *testing.T) {
+	g := NewGraph()
+	v := g.GetVertex(1)
+
+	if v.Vertex != nil {
+		t.Errorf("TestGetVertex2 has faild. An Expected value is nil.")
+	}
+	t.Log("TestGetVertex2 has successed.")
+}
+
 //TestAddEdge1 tests AddEdge.
 //An edge e that will be added doesn't exist in g.
 //Each endpoint of e also don't exist in g.
