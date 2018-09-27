@@ -1,53 +1,66 @@
 package goraph
 
-import "errors"
-
 //Graph : グラフの構造体。privateにすべき？
 // 頂点集合と辺集合を持つようにする。
 // LinkedListとかはもう少し検討が必要。
 type Graph struct {
-	vertexSet map[interface{}]Vertex
-	edgeSet   map[interface{}]map[interface{}]Edge
-	neighbors map[interface{}]map[interface{}]Vertex
+	// vertex は任意の型をとれるようにする。それにattributeがつく。
+	// attributeはkeyがstring、valueが任意の型であるようなmap
+	vertexSet map[interface{}]map[string]interface{}
+
+	// edge は vertexの2つ組（hyper graphは考えない。。。）
+	// attributeはvertexと同じ。
+	adj map[interface{}]map[interface{}]map[string]interface{}
 }
 
 //NewGraph is constractor of Graph struct. It returns an empty graph.
-//スライスの容量も指定できるようにするべき。。。
 func NewGraph() *Graph {
 	g := new(Graph)
-	g.vertexSet = make(map[interface{}]Vertex)
-	g.edgeSet = make(map[interface{}]map[interface{}]Edge)
-	g.neighbors = make(map[interface{}]map[interface{}]Vertex)
+	g.vertexSet = make(map[interface{}]map[string]interface{})
+	g.adj = make(map[interface{}]map[interface{}]map[string]interface{})
 	return g
 }
 
 //AddVertex adds a vertex to g.
 //errorを返すべきなのかbool(success or fail)を返すべきなのか。。。
-func (g *Graph) AddVertex(v interface{}, attr map[string]interface{}) error {
+func (g *Graph) AddVertex(v interface{}, attr map[string]interface{}) bool {
 	if _, isExist := g.vertexSet[v]; isExist == true {
-		return errors.New("the vertex has already exist")
+		return false
 	}
 
-	g.vertexSet[v] = Vertex{v, attr}
-	g.neighbors[v] = make(map[interface{}]Vertex, 0)
-	return nil
+	g.vertexSet[v] = attr
+	g.adj[v] = make(map[interface{}]map[string]interface{}, 0)
+	return true
 }
 
 //AddVertices adds some vertices to g
-func (g *Graph) AddVertices(vertices []Vertex) {
-	for _, v := range vertices {
-		g.AddVertex(v.Vertex, v.Attributes)
+func (g *Graph) AddVertices(vertices map[interface{}]map[string]interface{}) int {
+	successCount := 0
+	for v, attribute := range vertices {
+		if g.AddVertex(v, attribute) == true {
+			successCount++
+		}
 	}
+	return successCount
 }
 
-//GetVertex get a vertex from g. If v is not in g, it returns nil.
-func (g *Graph) GetVertex(v interface{}) Vertex {
+//GetVertexAttributes get a vertex from g. If v is not in g, it returns nil.
+func (g *Graph) GetVertexAttributes(v interface{}) map[string]interface{} {
 	return g.vertexSet[v]
 }
 
 //GetNeighbors gets a v's neighbors. If v doesn't have neighbors, it returns nil.
-func (g *Graph) GetNeighbors(v interface{}) map[interface{}]Vertex {
-	return g.neighbors[v]
+func (g *Graph) GetNeighbors(v interface{}) map[interface{}]map[string]interface{} {
+	return g.adj[v]
+}
+
+// UpdateVertexAttribute update v's attribute.
+func (g *Graph) UpdateVertexAttribute(v interface{}, key string, value interface{}) bool {
+	if _, isExist := g.vertexSet[v][key]; isExist == true {
+		g.vertexSet[v][key] = value
+		return true
+	}
+	return false
 }
 
 //DeleteVertex deletes a vertex from g.
@@ -55,11 +68,11 @@ func (g *Graph) GetNeighbors(v interface{}) map[interface{}]Vertex {
 func (g *Graph) DeleteVertex(v interface{}) {
 	delete(g.vertexSet, v)
 
-	neighbors := g.neighbors[v]
-	for _, u := range neighbors {
-		delete(g.neighbors[u], v)
+	neighbors := g.adj[v]
+	for key := range neighbors {
+		delete(g.adj[key], v)
 	}
-	delete(g.neighbors, v)
+	delete(g.adj, v)
 }
 
 //DeleteVertices deletes some vertices from g.
@@ -71,7 +84,7 @@ func (g *Graph) DeleteVertices(vertices []Vertex) {
 
 //AddEdge adds an edge to g.
 //If g doesn't have vertex u or v, they are added to g without attributes.
-func (g *Graph) AddEdge(u interface{}, v interface{}, attr map[string]interface{}) error {
+func (g *Graph) AddEdge(u interface{}, v interface{}, attr map[string]interface{}) bool {
 	// check the VertexSet contains each vertecies
 	if _, isExist := g.vertexSet[v]; isExist == false {
 		g.AddVertex(v, nil)
@@ -81,24 +94,19 @@ func (g *Graph) AddEdge(u interface{}, v interface{}, attr map[string]interface{
 	}
 
 	//check the edge set has an same edge.
-	if _, isExist := g.neighbors[u][v]; isExist == true {
-		return errors.New("the edge has already exist")
+	if _, isExist := g.adj[u][v]; isExist == true {
+		return false
 	}
 
-	g.neighbors[u][v] = Vertex{v, nil}
-	g.neighbors[v][u] = Vertex{u, nil}
+	g.adj[u][v] = attr
+	g.adj[v][u] = attr
 
-	e := Edge{u, v, attr}
-	g.edgeSet[u] = make(map[interface{}]Edge, 0)
-	g.edgeSet[u][v] = e
-	g.edgeSet[v] = make(map[interface{}]Edge, 0)
-	g.edgeSet[v][u] = e
-
-	return nil
+	return true
 }
 
 //AddEdges adds some edges to g.
-func (g *Graph) AddEdges(edges []Edge) {
+func (g *Graph) AddEdges(edges []Edge) int {
+	successCount := 0
 	for _, e := range edges {
 		if _, isExists := g.vertexSet[e.From]; isExists == true {
 			continue
@@ -106,30 +114,33 @@ func (g *Graph) AddEdges(edges []Edge) {
 		if _, isExists := g.vertexSet[e.To]; isExists == true {
 			continue
 		}
-		g.AddEdge(e.From, e.To, e.Attributes)
+		if g.AddEdge(e.From, e.To, e.Attributes) == true {
+			successCount++
+		}
 	}
+	return successCount
 }
 
 //DeleteEdge deletes an edge from g.
-func (g *Graph) DeleteEdge(e Edge) {
-	if _, isExists := g.edgeSet[e]; isExists == false {
-		return
+func (g *Graph) DeleteEdge(u interface{}, v interface{}) bool {
+	if _, isExists := g.adj[u][v]; isExists == false {
+		return false
 	}
 
-	//EdgeSetから削除
-	delete(g.edgeSet[e.From], e.To)
-	delete(g.edgeSet[e.To], e.From)
-
-	//Neighborsから削除
-	delete(g.neighbors[e.From], e.To)
-	delete(g.neighbors[e.To], e.From)
+	delete(g.adj[u], v)
+	delete(g.adj[v], u)
+	return true
 }
 
 //DeleteEdges deletes some edges form g.
-func (g *Graph) DeleteEdges(edges []Edge) {
+func (g *Graph) DeleteEdges(edges [][2]interface{}) int {
+	successCount := 0
 	for _, e := range edges {
-		g.DeleteEdge(e)
+		if isExist := g.DeleteEdge(e[0], e[1]); isExist == true {
+			successCount++
+		}
 	}
+	return successCount
 }
 
 //AdjancencyMatrix returns a matrix of vertex adjacency.
