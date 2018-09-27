@@ -4,6 +4,8 @@ import (
 	"testing"
 )
 
+// C#で言うとこのTestCaseみたいなのを使いたい。。。
+
 func TestNewGraph(t *testing.T) {
 	g := NewGraph()
 	if g == nil {

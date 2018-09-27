@@ -26,11 +26,11 @@ type IGraph interface {
 	DeleteVertex(v interface{})
 	DeleteVertices(vertices []interface{})
 
-	//GetEdge
+	GetEdgeAttributes(u interface{}, v interface{}) map[string]interface{}
 	//GetEdges
 	AddEdge(u interface{}, v interface{}, attr map[string]interface{}) bool
 	AddEdges(edges []Edge) int
-	//UpdateEdge
+	UpdateEdgeAttribute(u interface{}, v interface{}, key string, value interface{}) bool
 	//UpdateEdges
 	DeleteEdge(u interface{}, v interface{}) bool
 	DeleteEdges(edges []Edge) int

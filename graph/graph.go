@@ -44,7 +44,7 @@ func (g *Graph) AddVertices(vertices map[interface{}]map[string]interface{}) int
 	return successCount
 }
 
-//GetVertexAttributes get a vertex from g. If v is not in g, it returns nil.
+//GetVertexAttributes get v's attribute. If v is not in g, it returns nil.
 func (g *Graph) GetVertexAttributes(v interface{}) map[string]interface{} {
 	return g.vertexSet[v]
 }
@@ -76,10 +76,15 @@ func (g *Graph) DeleteVertex(v interface{}) {
 }
 
 //DeleteVertices deletes some vertices from g.
-func (g *Graph) DeleteVertices(vertices []Vertex) {
+func (g *Graph) DeleteVertices(vertices []interface{}) {
 	for _, v := range vertices {
 		g.DeleteVertex(v)
 	}
+}
+
+//GetEdgeAttributes gets edge's attributes.
+func (g *Graph) GetEdgeAttributes(u interface{}, v interface{}) map[string]interface{} {
+	return g.adj[u][v]
 }
 
 //AddEdge adds an edge to g.
@@ -105,6 +110,7 @@ func (g *Graph) AddEdge(u interface{}, v interface{}, attr map[string]interface{
 }
 
 //AddEdges adds some edges to g.
+//attributeまで含めた辺のリストをそのまま加える仕様にすると使いづらいのでラップしたEdge構造体のリストを引数にする。
 func (g *Graph) AddEdges(edges []Edge) int {
 	successCount := 0
 	for _, e := range edges {
@@ -119,6 +125,16 @@ func (g *Graph) AddEdges(edges []Edge) int {
 		}
 	}
 	return successCount
+}
+
+//UpdateEdgeAttribute updates edge's attribute
+func (g *Graph) UpdateEdgeAttribute(u interface{}, v interface{}, key string, value interface{}) bool {
+	if _, isExist := g.adj[u][v]; isExist == false {
+		return false
+	}
+	g.adj[u][v][key] = value
+	g.adj[v][u][key] = value
+	return true
 }
 
 //DeleteEdge deletes an edge from g.
