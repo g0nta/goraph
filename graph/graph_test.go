@@ -1,4 +1,4 @@
-package goraph
+package graph
 
 import (
 	"testing"

@@ -1,4 +1,4 @@
-package goraph
+package graph
 
 //Vertex : 頂点構造体
 type Vertex struct {
@@ -17,6 +17,8 @@ type Edge struct {
 //AddVertex adds vertex to its graph. If the graph already has same vertex, it returns error.
 //AddEdge add edge to its graph. If the graph already has same vertex, it returns error.
 type IGraph interface {
+	ContainsVertex(v interface{}) bool
+	GetVertexCount() int
 	AddVertex(v interface{}, attr map[string]interface{}) bool
 	AddVertices(vertices map[interface{}]map[string]interface{}) int
 	GetVertexAttributes(v interface{}) map[string]interface{}

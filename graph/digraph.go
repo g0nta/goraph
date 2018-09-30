@@ -1,4 +1,4 @@
-package goraph
+package graph
 
 //Digraph is struct of directed graph
 type Digraph struct {

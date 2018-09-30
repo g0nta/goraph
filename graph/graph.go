@@ -1,4 +1,4 @@
-package goraph
+package graph
 
 //Graph : グラフの構造体。privateにすべき？
 // 頂点集合と辺集合を持つようにする。
@@ -19,6 +19,17 @@ func NewGraph() *Graph {
 	g.vertexSet = make(map[interface{}]map[string]interface{})
 	g.adj = make(map[interface{}]map[interface{}]map[string]interface{})
 	return g
+}
+
+//ContainsVertex checks that g has a vertex v.
+func (g *Graph) ContainsVertex(v interface{}) bool {
+	_, isExist := g.vertexSet[v]
+	return isExist
+}
+
+//GetVertexCount returns a number of g's vertices.
+func (g *Graph) GetVertexCount() int {
+	return len(g.vertexSet)
 }
 
 //AddVertex adds a vertex to g.
