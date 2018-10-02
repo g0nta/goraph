@@ -62,16 +62,19 @@ func (g *Graph) GetVertexAttributes(v interface{}) map[string]interface{} {
 
 //GetNeighbors gets a v's neighbors. If v doesn't have neighbors, it returns nil.
 func (g *Graph) GetNeighbors(v interface{}) map[interface{}]map[string]interface{} {
-	return g.adj[v]
+	neighbors := make(map[interface{}]map[string]interface{}, 0)
+	for key := range g.adj[v] {
+		neighbors[key] = g.vertexSet[key]
+	}
+	return neighbors
 }
 
 // UpdateVertexAttribute update v's attribute.
 func (g *Graph) UpdateVertexAttribute(v interface{}, key string, value interface{}) bool {
-	if _, isExist := g.vertexSet[v][key]; isExist == true {
+	if _, isExist := g.vertexSet[v]; isExist == true {
 		g.vertexSet[v][key] = value
-		return true
 	}
-	return false
+	return true
 }
 
 //DeleteVertex deletes a vertex from g.
@@ -103,10 +106,10 @@ func (g *Graph) GetEdgeAttributes(u interface{}, v interface{}) map[string]inter
 func (g *Graph) AddEdge(u interface{}, v interface{}, attr map[string]interface{}) bool {
 	// check the VertexSet contains each vertecies
 	if _, isExist := g.vertexSet[v]; isExist == false {
-		g.AddVertex(v, nil)
+		g.AddVertex(v, make(map[string]interface{}, 0))
 	}
 	if _, isExist := g.vertexSet[u]; isExist == false {
-		g.AddVertex(u, nil)
+		g.AddVertex(u, make(map[string]interface{}, 0))
 	}
 
 	//check the edge set has an same edge.
@@ -125,12 +128,6 @@ func (g *Graph) AddEdge(u interface{}, v interface{}, attr map[string]interface{
 func (g *Graph) AddEdges(edges []Edge) int {
 	successCount := 0
 	for _, e := range edges {
-		if _, isExists := g.vertexSet[e.From]; isExists == true {
-			continue
-		}
-		if _, isExists := g.vertexSet[e.To]; isExists == true {
-			continue
-		}
 		if g.AddEdge(e.From, e.To, e.Attributes) == true {
 			successCount++
 		}
@@ -160,10 +157,10 @@ func (g *Graph) DeleteEdge(u interface{}, v interface{}) bool {
 }
 
 //DeleteEdges deletes some edges form g.
-func (g *Graph) DeleteEdges(edges [][2]interface{}) int {
+func (g *Graph) DeleteEdges(edges []Edge) int {
 	successCount := 0
 	for _, e := range edges {
-		if isExist := g.DeleteEdge(e[0], e[1]); isExist == true {
+		if isExist := g.DeleteEdge(e.To, e.From); isExist == true {
 			successCount++
 		}
 	}
