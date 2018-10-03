@@ -6,6 +6,7 @@ package graph
 type Graph struct {
 	// vertex は任意の型をとれるようにする。それにattributeがつく。
 	// attributeはkeyがstring、valueが任意の型であるようなmap
+	// ユーザーは問題に応じてattributeにweightやcolorといった属性を追加する。
 	vertexSet map[interface{}]map[string]interface{}
 
 	// edge は vertexの2つ組（hyper graphは考えない。。。）
