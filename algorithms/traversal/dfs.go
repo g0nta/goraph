@@ -55,7 +55,7 @@ func (dfs *DFS) Next() bool {
 	return true
 }
 
-// Value returns current node value.
+// Value returns current node.
 func (dfs *DFS) Value() interface{} {
 	return dfs.stack.Front().Value
 }
