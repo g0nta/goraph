@@ -6,20 +6,6 @@ import (
 
 // C#で言うとこのTestCaseみたいなのを使いたい。。。
 
-func TestNewGraph(t *testing.T) {
-	g := NewGraph()
-	if g == nil {
-		t.Error("TestNewGraph has faild.")
-	}
-	if g.vertexSet == nil {
-		t.Error("TestNewGraph has faild. The vertexSet is nil.")
-	}
-	if g.adj == nil {
-		t.Error("TestNewGraph has faild. The adj is nil.")
-	}
-	t.Log("TestNewGraph has successed.")
-}
-
 //TestAddVertex1 tests AddVertex.
 //A vertex that will be added doesn't exist in g.
 func TestAddVertex1(t *testing.T) {
@@ -151,6 +137,75 @@ func TestGetNeighbors1(t *testing.T) {
 	}
 	if neighbors[w]["weight"] != attrw["weight"] {
 		t.Errorf("TestGetNeighbors has faild. An Expected value is %d, but it returns %d", attrw["weight"], neighbors[w]["weight"])
+	}
+}
+
+func TestUpdateVertexAttribute1(t *testing.T) {
+	g := NewGraph()
+
+	u := 1
+	attru := map[string]interface{}{"weight": 10}
+
+	g.vertexSet[u] = attru
+
+	if isSuccess := g.UpdateVertexAttribute(u, "weight", 20); isSuccess == false {
+		t.Errorf("TestUpdateVertexAttribute has failed. True must be returned.")
+	}
+
+	if g.vertexSet[u]["weight"] != 20 {
+		t.Errorf("TestUpdateVertexAttribute has failed. 20 must be returned.")
+	}
+
+}
+
+func TestUpdateVertexAttribute2(t *testing.T) {
+	g := NewGraph()
+
+	if isSuccess := g.UpdateVertexAttribute(1, "weight", 20); isSuccess == true {
+		t.Errorf("TestUpdateVertexAttribute has failed. False must be returned.")
+	}
+}
+
+func TestDeleteVertex(t *testing.T) {
+	g := NewGraph()
+
+	u := 1
+	attru := map[string]interface{}{"weight": 10}
+	v := 2
+	attrv := map[string]interface{}{"weight": 20}
+	w := 3
+	attrw := map[string]interface{}{"weight": 30}
+
+	g.vertexSet[u] = attru
+	g.vertexSet[v] = attrv
+	g.vertexSet[w] = attrw
+	g.adj[u] = map[interface{}]map[string]interface{}{
+		v: attrv,
+		w: attrw,
+	}
+	g.adj[v] = map[interface{}]map[string]interface{}{
+		u: attru,
+	}
+	g.adj[w] = map[interface{}]map[string]interface{}{
+		w: attrw,
+	}
+
+	g.DeleteVertex(u)
+
+	if _, isExist := g.vertexSet[u]; isExist == true {
+		t.Errorf("TestDeleteVertex has failed. False must be returned.")
+	}
+
+	if _, isExist := g.adj[u]; isExist == true {
+		t.Errorf("TestDeleteVertex has failed. False must be returned.")
+	}
+
+	if _, isExist := g.adj[v][u]; isExist == true {
+		t.Errorf("TestDeleteVertex has failed. False must be returned.")
+	}
+
+	if _, isExist := g.adj[w][u]; isExist == true {
+		t.Errorf("TestDeleteVertex has failed. False must be returned.")
 	}
 }
 

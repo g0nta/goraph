@@ -74,8 +74,9 @@ func (g *Graph) GetNeighbors(v interface{}) map[interface{}]map[string]interface
 func (g *Graph) UpdateVertexAttribute(v interface{}, key string, value interface{}) bool {
 	if _, isExist := g.vertexSet[v]; isExist == true {
 		g.vertexSet[v][key] = value
+		return true
 	}
-	return true
+	return false
 }
 
 //DeleteVertex deletes a vertex from g.
