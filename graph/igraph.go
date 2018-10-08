@@ -25,8 +25,8 @@ type IGraph interface {
 	GetNeighbors(v interface{}) map[interface{}]map[string]interface{}
 	UpdateVertexAttribute(v interface{}, key string, value interface{}) bool
 	//UpdateVertices
-	DeleteVertex(v interface{})
-	DeleteVertices(vertices []interface{})
+	DeleteVertex(v interface{}) bool
+	DeleteVertices(vertices []interface{}) int
 
 	GetEdgeAttributes(u interface{}, v interface{}) map[string]interface{}
 	//GetEdges

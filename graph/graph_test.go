@@ -166,7 +166,22 @@ func TestUpdateVertexAttribute2(t *testing.T) {
 	}
 }
 
-func TestDeleteVertex(t *testing.T) {
+func TestDeleteVertex1(t *testing.T) {
+	g := NewGraph()
+	g.AddVertex(1, nil)
+	if g.DeleteVertex(1) == false {
+		t.Errorf("TestDeleteVertex1 has failed. True must be returned.")
+	}
+}
+
+func TestDeleteVertex2(t *testing.T) {
+	g := NewGraph()
+	if g.DeleteVertex(1) == true {
+		t.Errorf("TestDeleteVertex2 has failed. False must be returned.")
+	}
+}
+
+func TestDeleteVertex3(t *testing.T) {
 	g := NewGraph()
 
 	u := 1
@@ -206,6 +221,29 @@ func TestDeleteVertex(t *testing.T) {
 
 	if _, isExist := g.adj[w][u]; isExist == true {
 		t.Errorf("TestDeleteVertex has failed. False must be returned.")
+	}
+}
+
+func TestDeleteVertices1(t *testing.T) {
+	g := NewGraph()
+	g.AddVertex(1, nil)
+	g.AddVertex(2, nil)
+	g.AddVertex(3, nil)
+
+	vertices := []interface{}{1, 2, 3}
+	if g.DeleteVertices(vertices) != 3 {
+		t.Errorf("TestDeleteVertices1 has failed. 3 must be returned.")
+	}
+}
+
+func TestDeleteVertices2(t *testing.T) {
+	g := NewGraph()
+	g.AddVertex(1, nil)
+	g.AddVertex(2, nil)
+
+	vertices := []interface{}{1, 2, 3}
+	if g.DeleteVertices(vertices) != 2 {
+		t.Errorf("TestDeleteVertices1 has failed. 2 must be returned.")
 	}
 }
 
@@ -267,5 +305,114 @@ func TestAddEdge3(t *testing.T) {
 	g.AddEdge(u, v, nil)
 	if g.AddEdge(u, v, nil) == true {
 		t.Error("TestAddEdge3 has faild. True must be returned.")
+	}
+}
+
+func TestAddEdges1(t *testing.T) {
+	g := NewGraph()
+
+	edges := []Edge{
+		Edge{From: 1, To: 2, Attributes: map[string]interface{}{"weight": 10}},
+		Edge{From: 2, To: 3, Attributes: map[string]interface{}{"weight": 10}},
+		Edge{From: 3, To: 4, Attributes: map[string]interface{}{"weight": 10}},
+	}
+
+	if successCount := g.AddEdges(edges); successCount != 3 {
+		t.Errorf("TestAddEdges1 has failed. 3 must be returned.")
+	}
+}
+
+func TestAddEdges2(t *testing.T) {
+	g := NewGraph()
+
+	g.AddEdge(1, 2, map[string]interface{}{"weight": 10})
+
+	edges := []Edge{
+		Edge{From: 1, To: 2, Attributes: map[string]interface{}{"weight": 10}},
+		Edge{From: 2, To: 3, Attributes: map[string]interface{}{"weight": 10}},
+		Edge{From: 3, To: 4, Attributes: map[string]interface{}{"weight": 10}},
+	}
+
+	if successCount := g.AddEdges(edges); successCount != 2 {
+		t.Errorf("TestAddEdges1 has failed. 2 must be returned.")
+	}
+}
+
+func TestUpdateEdgeAttribute1(t *testing.T) {
+	g := NewGraph()
+
+	g.AddEdge(1, 2, map[string]interface{}{"weight": 10})
+	if isSuccess := g.UpdateEdgeAttribute(1, 2, "weight", 30); isSuccess == false {
+		t.Errorf("TestUpdateEdgeAttribute1 has failed. True must be returned.")
+	}
+
+	if g.adj[1][2]["weight"] != 30 {
+		t.Errorf("TestUpdateEdgeAttribute1 has failed 30 must be returned.")
+	}
+}
+
+func TestUpdateEdgeAttribute2(t *testing.T) {
+	g := NewGraph()
+	if isSuccess := g.UpdateEdgeAttribute(1, 2, "weight", 30); isSuccess == true {
+		t.Errorf("TestUpdateEdgeAttribute2 has failed. False must be returned.")
+	}
+}
+
+func TestDeleteEdge1(t *testing.T) {
+	g := NewGraph()
+	g.AddEdge(1, 2, map[string]interface{}{"weight": 10})
+
+	if g.DeleteEdge(1, 2) == false {
+		t.Errorf("TestDeleteEdge1 has failed. True must be returned.")
+	}
+
+	if _, isExist := g.adj[1][2]; isExist == true {
+		t.Errorf("TestDeleteEdge1 has failed. False must be returned.")
+	}
+
+	if _, isExist := g.adj[2][1]; isExist == true {
+		t.Errorf("TestDeleteEdge1 has failed. False must be returned.")
+	}
+}
+
+func TestDeleteEdge2(t *testing.T) {
+	g := NewGraph()
+	if g.DeleteEdge(1, 2) == true {
+		t.Errorf("TestDeleteEdge2 has failed. False must be returned.")
+	}
+}
+
+func TestDeleteEdges1(t *testing.T) {
+	g := NewGraph()
+
+	g.AddEdge(1, 2, nil)
+	g.AddEdge(2, 3, nil)
+	g.AddEdge(3, 4, nil)
+
+	edges := []Edge{
+		Edge{From: 1, To: 2},
+		Edge{From: 2, To: 3},
+		Edge{From: 3, To: 4},
+	}
+
+	if g.DeleteEdges(edges) != 3 {
+		t.Errorf("TestDeleteEdges1 has failed. 3 must be returned.")
+	}
+}
+
+func TestDeleteEdges2(t *testing.T) {
+	g := NewGraph()
+
+	g.AddEdge(1, 2, nil)
+	g.AddEdge(2, 3, nil)
+
+	edges := []Edge{
+		Edge{From: 1, To: 2},
+		Edge{From: 2, To: 3},
+		Edge{From: 3, To: 4},
+	}
+
+	if g.DeleteEdges(edges) != 2 {
+		t.Errorf("TestDeleteEdges1 has failed. 2 must be returned.")
 	}
 }

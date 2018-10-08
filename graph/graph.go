@@ -81,7 +81,12 @@ func (g *Graph) UpdateVertexAttribute(v interface{}, key string, value interface
 
 //DeleteVertex deletes a vertex from g.
 //複数のオブジェクトをいじるからトランザクション処理っぽいことしたほうがいいか。。。
-func (g *Graph) DeleteVertex(v interface{}) {
+func (g *Graph) DeleteVertex(v interface{}) bool {
+
+	if _, isExist := g.vertexSet[v]; isExist == false {
+		return false
+	}
+
 	delete(g.vertexSet, v)
 
 	neighbors := g.adj[v]
@@ -89,13 +94,19 @@ func (g *Graph) DeleteVertex(v interface{}) {
 		delete(g.adj[key], v)
 	}
 	delete(g.adj, v)
+
+	return true
 }
 
 //DeleteVertices deletes some vertices from g.
-func (g *Graph) DeleteVertices(vertices []interface{}) {
+func (g *Graph) DeleteVertices(vertices []interface{}) int {
+	successCount := 0
 	for _, v := range vertices {
-		g.DeleteVertex(v)
+		if isSuccess := g.DeleteVertex(v); isSuccess == true {
+			successCount++
+		}
 	}
+	return successCount
 }
 
 //GetEdgeAttributes gets edge's attributes.
