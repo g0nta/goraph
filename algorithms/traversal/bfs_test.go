@@ -6,28 +6,76 @@ import (
 	g "github.com/g0nta/goraph/graph"
 )
 
-func TestNewBFS1(t *testing.T) {
-	g := g.NewMGraph(true)
-	bfs, err := NewBFS(g, "isVisit", 1)
+// Test case structure of NewBFS
+type testCaseNewBFS struct {
+	IsContainsVertex bool
+	IsErrNil         bool
+	IsBfsNil         bool
+	ExpectedCurrent  interface{}
+}
 
-	if err != nil {
-		t.Errorf("TestNewBFS1 has failed. Err must not occured.")
+func TestNewBFS(t *testing.T) {
+	testCases := []testCaseNewBFS{
+		testCaseNewBFS{
+			IsContainsVertex: true,
+			IsErrNil:         true,
+			IsBfsNil:         false,
+		},
+		testCaseNewBFS{
+			IsContainsVertex: false,
+			IsErrNil:         false,
+			IsBfsNil:         true,
+		},
 	}
 
-	if bfs.queue.Front().Value != 1 {
-		t.Errorf("TestNewBFS1 has failed. 1 must be returned.")
+	for _, value := range testCases {
+		g := g.NewMGraph(value.IsContainsVertex, nil)
+		bfs, err := NewBFS(g, "isVisit", 1)
+		if (err == nil) != value.IsErrNil {
+			t.Errorf("TestNewBFS1 has failed.")
+		}
+
+		if (bfs == nil) != value.IsBfsNil {
+			t.Errorf("TestNewBFS1 has failed.")
+		}
 	}
 }
 
-func TestNewBFS2(t *testing.T) {
-	g := g.NewMGraph(false)
-	bfs, err := NewBFS(g, "isVisit", 1)
+// Test case structure of Next.
+type testCaseNext struct {
+	Neighbors          map[interface{}]map[string]interface{}
+	ExpectedNextResult bool
+	ExpectedQLength    int
+}
 
-	if err == nil {
-		t.Errorf("TestNewBFS1 has failed. Err must be nil.")
+func TestNext(t *testing.T) {
+	testCase := []testCaseNext{
+		{
+			Neighbors: map[interface{}]map[string]interface{}{
+				2: {"isVisit": false},
+				3: {"isVisit": false},
+			},
+			ExpectedNextResult: true,
+			ExpectedQLength:    2,
+		},
+		{
+			Neighbors: map[interface{}]map[string]interface{}{
+				2: {"isVisit": true},
+				3: {"isVisit": true},
+			},
+			ExpectedNextResult: false,
+			ExpectedQLength:    0,
+		},
 	}
 
-	if bfs != nil {
-		t.Errorf("TestNewBFS1 has failed. bfs must be nil.")
+	for _, c := range testCase {
+		g := g.NewMGraph(true, c.Neighbors)
+		bfs, _ := NewBFS(g, "isVisit", 1)
+		if bfs.Next() != c.ExpectedNextResult {
+			t.Errorf("TestNext1 has failed. %T must be returned.", c.ExpectedNextResult)
+		}
+		if bfs.queue.Len() != c.ExpectedQLength {
+			t.Errorf("TestNext1 has failed. %T must be returned.", c.ExpectedQLength)
+		}
 	}
 }

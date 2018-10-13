@@ -5,12 +5,14 @@ type MGraph struct {
 	vertexSet               map[interface{}]map[string]interface{}
 	adj                     map[interface{}]map[interface{}]map[string]interface{}
 	isContainsVertexSuccess bool
+	neighbors               map[interface{}]map[string]interface{}
 }
 
 // NewMGraph is a constructor of MGraph.
-func NewMGraph(isContainsVertexSuccess bool) *MGraph {
+func NewMGraph(isContainsVertexSuccess bool, neighbors map[interface{}]map[string]interface{}) *MGraph {
 	g := new(MGraph)
 	g.isContainsVertexSuccess = isContainsVertexSuccess
+	g.neighbors = neighbors
 	return g
 }
 
@@ -36,7 +38,7 @@ func (mg *MGraph) GetVertexAttributes(v interface{}) map[string]interface{} {
 }
 
 func (mg *MGraph) GetNeighbors(v interface{}) map[interface{}]map[string]interface{} {
-	panic("not implemented")
+	return mg.neighbors
 }
 
 // UpdateVertexAttribute is a mock method.

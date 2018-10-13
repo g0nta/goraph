@@ -31,18 +31,20 @@ func NewBFS(graph g.IGraph, visitFlagKey string, start interface{}) (*BFS, error
 // Next updates a current vertex to a next vertex
 // and returns whether a next vertex exists or not.
 func (bfs *BFS) Next() bool {
-	current := bfs.queue.Front().Value
+	// 最初と最後の2回チェックする必要がある。。。
+	if bfs.queue.Len() == 0 {
+		return false
+	}
+
+	current := bfs.queue.Remove(bfs.queue.Front())
 	visitFlagKey := bfs.visitFlagKey
 
 	neighbors := bfs.graph.GetNeighbors(current)
 	for key, value := range neighbors {
 		if flag, isExist := value[visitFlagKey]; isExist == false || flag == false {
 			bfs.queue.PushBack(key)
+			bfs.graph.UpdateVertexAttribute(key, visitFlagKey, true)
 		}
-	}
-
-	if current == bfs.queue.Front().Value {
-		bfs.queue.Remove(bfs.queue.Front())
 	}
 
 	if bfs.queue.Len() == 0 {
