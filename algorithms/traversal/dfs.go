@@ -34,6 +34,10 @@ func NewDFS(graph g.IGraph, visitFlagKey string, start interface{}) (*DFS, error
 // Next updates a current vertex to a next vertex
 // and returns whether a next vertex exists or not.
 func (dfs *DFS) Next() bool {
+	if dfs.stack.Len() == 0 {
+		return false
+	}
+
 	current := dfs.stack.Front().Value
 	visitFlagKey := dfs.visitFlagKey
 	// get current's neighbors.

@@ -1,4 +1,6 @@
-package graph
+package traversal
+
+import g "github.com/g0nta/goraph/graph"
 
 // MGraph is mock graph structure.
 type MGraph struct {
@@ -62,7 +64,7 @@ func (mg *MGraph) AddEdge(u interface{}, v interface{}, attr map[string]interfac
 	panic("not implemented")
 }
 
-func (mg *MGraph) AddEdges(edges []Edge) int {
+func (mg *MGraph) AddEdges(edges []g.Edge) int {
 	panic("not implemented")
 }
 
@@ -74,6 +76,6 @@ func (mg *MGraph) DeleteEdge(u interface{}, v interface{}) bool {
 	panic("not implemented")
 }
 
-func (mg *MGraph) DeleteEdges(edges []Edge) int {
+func (mg *MGraph) DeleteEdges(edges []g.Edge) int {
 	panic("not implemented")
 }

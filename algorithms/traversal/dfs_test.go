@@ -5,21 +5,21 @@ import (
 )
 
 // Test case structure of NewBFS
-type testCaseNewBFS struct {
+type testCaseNewDFS struct {
 	IsContainsVertex bool
 	IsErrNil         bool
 	IsBfsNil         bool
 	ExpectedCurrent  interface{}
 }
 
-func TestNewBFS(t *testing.T) {
-	testCases := []testCaseNewBFS{
-		testCaseNewBFS{
+func TestNewDFS(t *testing.T) {
+	testCases := []testCaseNewDFS{
+		testCaseNewDFS{
 			IsContainsVertex: true,
 			IsErrNil:         true,
 			IsBfsNil:         false,
 		},
-		testCaseNewBFS{
+		testCaseNewDFS{
 			IsContainsVertex: false,
 			IsErrNil:         false,
 			IsBfsNil:         true,
@@ -28,7 +28,7 @@ func TestNewBFS(t *testing.T) {
 
 	for _, value := range testCases {
 		g := NewMGraph(value.IsContainsVertex, nil)
-		bfs, err := NewBFS(g, "isVisit", 1)
+		bfs, err := NewDFS(g, "isVisit", 1)
 		if (err == nil) != value.IsErrNil {
 			t.Errorf("TestNewBFS1 has failed.")
 		}
@@ -40,40 +40,41 @@ func TestNewBFS(t *testing.T) {
 }
 
 // Test case structure of Next.
-type testCaseBFSNext struct {
-	Neighbors          map[interface{}]map[string]interface{}
-	ExpectedNextResult bool
-	ExpectedQLength    int
+type testCaseDFSNext struct {
+	Neighbors           map[interface{}]map[string]interface{}
+	ExpectedNextResult  bool
+	ExpectedStackLength int
 }
 
-func TestBFSNext(t *testing.T) {
-	testCase := []testCaseBFSNext{
+func TestDFSNext(t *testing.T) {
+	visitFlagKey := "isVisit"
+	testCase := []testCaseDFSNext{
 		{
 			Neighbors: map[interface{}]map[string]interface{}{
-				2: {"isVisit": false},
-				3: {"isVisit": false},
+				2: {visitFlagKey: false},
+				3: {visitFlagKey: false},
 			},
-			ExpectedNextResult: true,
-			ExpectedQLength:    2,
+			ExpectedNextResult:  true,
+			ExpectedStackLength: 2,
 		},
 		{
 			Neighbors: map[interface{}]map[string]interface{}{
-				2: {"isVisit": true},
-				3: {"isVisit": true},
+				2: {visitFlagKey: true},
+				3: {visitFlagKey: true},
 			},
-			ExpectedNextResult: false,
-			ExpectedQLength:    0,
+			ExpectedNextResult:  false,
+			ExpectedStackLength: 0,
 		},
 	}
 
 	for _, c := range testCase {
 		g := NewMGraph(true, c.Neighbors)
-		bfs, _ := NewBFS(g, "isVisit", 1)
+		bfs, _ := NewBFS(g, visitFlagKey, 1)
 		if bfs.Next() != c.ExpectedNextResult {
 			t.Errorf("TestNext1 has failed. %T must be returned.", c.ExpectedNextResult)
 		}
-		if bfs.queue.Len() != c.ExpectedQLength {
-			t.Errorf("TestNext1 has failed. %T must be returned.", c.ExpectedQLength)
+		if bfs.queue.Len() != c.ExpectedStackLength {
+			t.Errorf("TestNext1 has failed. %T must be returned.", c.ExpectedStackLength)
 		}
 	}
 }

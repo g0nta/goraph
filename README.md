@@ -1,2 +1,2 @@
 # goraph
-Simple graph library
+A Simple graph library

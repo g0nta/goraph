@@ -16,13 +16,27 @@ func main() {
 		graph.Edge{From: "B", To: "D", Attributes: nil},
 	}
 	g.AddEdges(edges)
-	dfs, err := trv.NewDFS(g, "isVisit", "A")
+	dfs, errDfs := trv.NewDFS(g, "isVisitDFS", "A")
 
-	if err != nil {
+	if errDfs != nil {
 		fmt.Println("g doesn't have a start vertex.")
 	}
 
-	for dfs.Next() {
-		fmt.Println(dfs.Value())
+	fmt.Println("DFS sample.")
+	traversalSample(dfs)
+
+	bfs, errBfs := trv.NewBFS(g, "isVisitBFS", "A")
+
+	if errBfs != nil {
+		fmt.Println("g doesn't have a start vertex.")
+	}
+
+	fmt.Println("BFS sample.")
+	traversalSample(bfs)
+}
+
+func traversalSample(traveler trv.Traveler) {
+	for traveler.Next() {
+		fmt.Println(traveler.Value())
 	}
 }
